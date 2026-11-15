@@ -331,6 +331,54 @@ def trace_scores(trace_id: str, db: Session = Depends(get_db), project: str = De
     ]
 
 
+@app.get("/api/v1/scores/timeseries")
+def scores_timeseries(
+    days: int = Query(default=30, le=365),
+    db: Session = Depends(get_db),
+    project: str = Depends(auth_project),
+) -> dict:
+    """Daily average score, bucketed by when the TRACE ran (not when it was
+    scored), so backfilled evals land on the right day. Powers the drift chart."""
+    import time
+    from collections import defaultdict
+    from datetime import datetime, timezone
+
+    trace_start = dict(
+        db.execute(
+            select(SpanRow.trace_id, func.min(SpanRow.start_time))
+            .where(SpanRow.project_id == project)
+            .group_by(SpanRow.trace_id)
+        ).all()
+    )
+    rows = db.execute(
+        select(ScoreRow.trace_id, ScoreRow.name, ScoreRow.value).where(
+            ScoreRow.project_id == project
+        )
+    ).all()
+    cutoff_ms = (time.time() - days * 86400) * 1000.0
+    buckets: dict = defaultdict(lambda: {"sum": 0.0, "n": 0, "low": 0})
+    for trace_id, name, value in rows:
+        t0 = trace_start.get(trace_id)
+        if t0 is None or t0 < cutoff_ms:
+            continue
+        day = datetime.fromtimestamp(t0 / 1000.0, tz=timezone.utc).strftime("%Y-%m-%d")
+        bucket = buckets[(name, day)]
+        bucket["sum"] += value
+        bucket["n"] += 1
+        bucket["low"] += value < 0.5
+    points = [
+        {
+            "name": name,
+            "day": day,
+            "avg": round(b["sum"] / b["n"], 4),
+            "count": b["n"],
+            "low_count": b["low"],
+        }
+        for (name, day), b in sorted(buckets.items())
+    ]
+    return {"days": days, "points": points}
+
+
 @app.get("/api/v1/scores/summary")
 def scores_summary(db: Session = Depends(get_db), project: str = Depends(auth_project)) -> dict:
     rows = db.execute(

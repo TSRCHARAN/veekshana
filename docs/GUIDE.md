@@ -136,7 +136,7 @@ const agent = veekshana.observe(async function agent(q: string) { /* ... */ });
 
 ### 3.4 Read the UI
 
-- **Dashboard** — traces/spans/tokens/total-cost tiles, evals summary (average score, low-score count), cost-by-model bars, model usage table.
+- **Dashboard** — traces/spans/tokens/total-cost tiles, evals summary (average score, low-score count), **task-completion-over-time chart** (daily average judge score bucketed by when the trace ran — quality drift and prompt regressions show as a dip), cost-by-model bars, model usage table.
 - **Traces** — one row per agent run: duration, spans, LLM calls, tokens, cost, ok/error badge. Click through.
 - **Trace page** — the waterfall: spans on a timeline, indented by nesting, colored by type (blue LLM, orange tool, gray span, red error). Click a span for duration, model, tokens, cost, and full input/output JSON. Score chips sit above; 👍/👎 buttons post human annotations.
 
@@ -191,6 +191,7 @@ Each key sees only its own project's traces, stats, and scores — reads and wri
 | `POST /api/v1/scores` | Write a score/annotation |
 | `GET /api/v1/traces/{id}/scores` | Scores for one trace |
 | `GET /api/v1/scores/summary` | Eval averages by score name |
+| `GET /api/v1/scores/timeseries?days=` | Daily average score by trace date (drift chart) |
 
 ## 4. How it works inside
 

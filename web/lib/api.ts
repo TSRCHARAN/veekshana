@@ -84,6 +84,11 @@ export interface ScoresSummary {
   by_name: { name: string; count: number; avg: number | null; low_count: number }[];
 }
 
+export interface ScoresTimeseries {
+  days: number;
+  points: { name: string; day: string; avg: number; count: number; low_count: number }[];
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${HOST}${path}`, {
     method: "POST",
@@ -100,6 +105,7 @@ export const api = {
   trace: (traceId: string) => get<TraceDetail>(`/api/v1/traces/${traceId}`),
   traceScores: (traceId: string) => get<Score[]>(`/api/v1/traces/${traceId}/scores`),
   scoresSummary: () => get<ScoresSummary>("/api/v1/scores/summary"),
+  scoresTimeseries: (days = 30) => get<ScoresTimeseries>(`/api/v1/scores/timeseries?days=${days}`),
   postScore: (score: { trace_id: string; name: string; value: number; source: string; comment?: string }) =>
     post<{ score_id: string }>("/api/v1/scores", score),
 };

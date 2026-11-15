@@ -29,7 +29,7 @@ You shipped an AI agent. Now you need to know:
 
 - **What is it doing?** Full traces of every agent run — LLM calls, tool calls, inputs, outputs — as a waterfall you can click into.
 - **What does it cost?** Token usage and spend per model, per feature, per session. Latency p50/p95.
-- **Is it actually working?** LLM-as-judge evals on sampled traces. Flag bad runs, catch regressions when you change prompts or models.
+- **Is it actually working?** LLM-as-judge evals on sampled traces, plus a score-over-time chart — bad runs get flagged, and regressions from prompt or model changes show up as a visible dip.
 
 ## Quickstart
 
