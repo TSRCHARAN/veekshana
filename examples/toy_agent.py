@@ -1,4 +1,5 @@
-"""Toy research agent instrumented with Veekshana.
+"""Toy collections agent instrumented with Veekshana: it fetches a customer's
+overdue invoices and drafts a polite payment reminder.
 
 Runs with NO API keys: LLM calls are mocked, but each one is recorded as a real
 "llm" span with model, tokens, and cost — so you get realistic traces to explore.
