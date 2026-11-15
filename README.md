@@ -3,6 +3,8 @@
 **Open-source observability for AI agents.** Traces, costs, and evals for LLM applications — self-hosted, in under 2 minutes.
 
 [![CI](https://github.com/TSRCHARAN/veekshana/actions/workflows/ci.yml/badge.svg)](https://github.com/TSRCHARAN/veekshana/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/veekshana.svg)](https://pypi.org/project/veekshana/)
+[![npm](https://img.shields.io/npm/v/veekshana.svg)](https://www.npmjs.com/package/veekshana)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776ab.svg)](sdk-python/)
 [![OTLP compatible](https://img.shields.io/badge/OpenTelemetry-OTLP%20ingest-7b61c1.svg)](docs/GUIDE.md#33-already-on-opentelemetry-skip-the-sdk)
@@ -44,7 +46,7 @@ That's it: API at `http://localhost:8787`, web UI at `http://localhost:3000`, SQ
 
 ```bash
 cd server
-pip install -e . -e ../sdk-python
+pip install veekshana veekshana-server
 veekshana-server
 ```
 
@@ -55,7 +57,7 @@ The server starts at `http://localhost:8787` with a local SQLite database. (Post
 ### 2. Instrument your agent
 
 ```bash
-pip install -e sdk-python
+pip install veekshana
 ```
 
 ```python
@@ -75,7 +77,7 @@ Anthropic and OpenAI clients are auto-instrumented: every `messages.create` / `c
 
 **Streaming is captured too**: `messages.stream(...)`, `stream=True`, and streamed chat completions all land as spans with text, token usage, and cost. On the official OpenAI endpoint, usage on streamed calls is requested automatically.
 
-**Using TypeScript/Node?**
+**Using TypeScript/Node?** `npm install veekshana`
 
 ```ts
 import * as veekshana from "veekshana";   // sdk-ts/

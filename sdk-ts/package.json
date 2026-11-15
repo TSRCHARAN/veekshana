@@ -5,16 +5,36 @@
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "README.md"],
-  "engines": { "node": ">=18" },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsc"
   },
-  "keywords": ["observability", "llm", "ai-agents", "tracing", "evals", "anthropic", "openai"],
-  "repository": { "type": "git", "url": "git+https://github.com/TSRCHARAN/veekshana.git", "directory": "sdk-ts" },
+  "keywords": [
+    "observability",
+    "llm",
+    "ai-agents",
+    "tracing",
+    "evals",
+    "anthropic",
+    "openai"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TSRCHARAN/veekshana.git",
+    "directory": "sdk-ts"
+  },
   "homepage": "https://github.com/TSRCHARAN/veekshana",
   "devDependencies": {
     "@types/node": "^22.5.0",
     "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "veekshana": "^0.2.0"
   }
 }

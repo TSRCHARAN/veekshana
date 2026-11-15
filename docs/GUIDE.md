@@ -63,12 +63,12 @@ docker compose up
 - UI: `http://localhost:3000`
 - Default API key: `dev-key` → change with `VEEKSHANA_API_KEY=... docker compose up --build`
 
-Without Docker: `pip install -e sdk-python -e server`, run `veekshana-server`, and `npm install && npm run dev` inside `web/`.
+Without Docker: `pip install veekshana veekshana-server`, run `veekshana-server`, and `npm install && npm run dev` inside `web/` (from a clone, contributors use `pip install -e sdk-python -e server` instead).
 
 ### 3.2 Instrument your agent
 
 ```bash
-pip install -e sdk-python        # (PyPI package planned post-launch)
+pip install veekshana
 ```
 
 ```python
