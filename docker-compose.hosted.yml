@@ -1,0 +1,38 @@
+# Veekshana from prebuilt images — no clone, no build:
+#
+#   curl -LO https://raw.githubusercontent.com/TSRCHARAN/veekshana/main/docker-compose.hosted.yml
+#   docker compose -f docker-compose.hosted.yml up
+#
+# API on :8787, UI on :3000, SQLite persisted on the veekshana-data volume.
+#
+# The prebuilt web image is wired for the localhost quickstart (API at
+# http://localhost:8787, key dev-key). To change the key or host, clone the
+# repo and use the main docker-compose.yml, which builds the web image with
+# your values baked in.
+
+services:
+  server:
+    image: ghcr.io/tsrcharan/veekshana-server:latest
+    ports:
+      - "8787:8787"
+    environment:
+      VEEKSHANA_API_KEY: ${VEEKSHANA_API_KEY:-dev-key}
+      VEEKSHANA_CORS_ORIGINS: ${VEEKSHANA_CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+    volumes:
+      - veekshana-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8787/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  web:
+    image: ghcr.io/tsrcharan/veekshana-web:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      server:
+        condition: service_healthy
+
+volumes:
+  veekshana-data:

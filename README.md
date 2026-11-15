@@ -39,7 +39,14 @@ You shipped an AI agent. Now you need to know:
 docker compose up
 ```
 
-That's it: API at `http://localhost:8787`, web UI at `http://localhost:3000`, SQLite on a Docker volume (Postgres: see `docker-compose.yml`). Default API key is `dev-key` — this is **Veekshana's own auth secret** (like a database password, not an AI vendor key); you choose it yourself via `VEEKSHANA_API_KEY=... docker compose up --build`.
+That's it: API at `http://localhost:8787`, web UI at `http://localhost:3000`, SQLite on a Docker volume (Postgres: see `docker-compose.yml`).
+
+No clone? Prebuilt images from GHCR:
+
+```bash
+curl -LO https://raw.githubusercontent.com/TSRCHARAN/veekshana/main/docker-compose.hosted.yml
+docker compose -f docker-compose.hosted.yml up
+``` Default API key is `dev-key` — this is **Veekshana's own auth secret** (like a database password, not an AI vendor key); you choose it yourself via `VEEKSHANA_API_KEY=... docker compose up --build`.
 
 <details>
 <summary>Without Docker</summary>
