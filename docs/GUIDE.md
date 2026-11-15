@@ -193,6 +193,26 @@ Each key sees only its own project's traces, stats, and scores — reads and wri
 | `GET /api/v1/scores/summary` | Eval averages by score name |
 | `GET /api/v1/scores/timeseries?days=` | Daily average score by trace date (drift chart) |
 
+### 3.7 Your data: where it lives, persistence, backup
+
+**All trace data lives server-side in the database — the SDKs store nothing.** An SDK (Python or TS) holds spans in memory for at most ~2 seconds before shipping them; if your app dies, you lose only those in-flight seconds. Everything already sent is in the server's database.
+
+**Docker setup:** SQLite on the named volume `veekshana-data`, which outlives containers:
+
+| Event | Your data |
+|---|---|
+| Container stops/crashes, machine reboots, `docker compose down`, `up --build` | ✅ safe — the volume persists |
+| `docker compose down -v`, or deleting the volume | ❌ gone — `-v` is the only routine destroyer |
+
+**Bring your own database:** set `VEEKSHANA_DATABASE_URL` to your own Postgres (a ready-to-uncomment Postgres service is in `docker-compose.yml`) and Veekshana becomes an app in front of *your* database, covered by whatever backup regime you already run.
+
+**Backup / export:**
+- SQLite: copy the file out of the volume — `docker compose cp server:/data/veekshana.db ./backup-$(date +%F).db`
+- Postgres: your usual `pg_dump`
+- Everything is also exportable as JSON via the REST API (`/api/v1/traces`, scores, stats) — your data is never locked in
+
+No automated backup scheduling or retention policies yet (see §5); self-hosters own backups, as with any database.
+
 ## 4. How it works inside
 
 **Trace building.** `@observe` wraps a function call in a `Span`. A `contextvars` stack tracks the active span, so nested observed calls (and the patched SDK calls inside them) attach as children automatically — the outermost call mints the `trace_id`. This propagates correctly through `async` code.
