@@ -1,0 +1,39 @@
+# ci-healer in shadow mode: on every failed CI run it reads the log, diagnoses the failure,
+# and writes a report to this run's job summary. With dry-run on it changes nothing:
+# no re-run, no PR, no comment. Flip dry-run to "false" once the verdicts look right.
+# https://github.com/marketplace/actions/ci-healer
+name: ci-healer
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  actions: write         # read logs, re-run failed jobs
+  contents: write        # create fix branches
+  pull-requests: write   # open fix PRs, comment diagnoses
+
+# One healer at a time per branch, so two events can't both act on the same failure.
+concurrency:
+  group: ci-healer-${{ github.event.workflow_run.head_branch }}
+
+jobs:
+  heal:
+    # Failures need healing; successful re-runs and fix-branch runs are how it learns.
+    if: >-
+      contains(fromJSON('["failure","timed_out","startup_failure"]'), github.event.workflow_run.conclusion) ||
+      github.event.workflow_run.run_attempt > 1 ||
+      startsWith(github.event.workflow_run.head_branch, 'ci-healer/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: TSRCHARAN/ci-healer@v1
+        with:
+          llm-provider: gemini
+          llm-model: gemini-flash-latest
+          llm-fallback-model: gemini-3.5-flash-lite   # used if the main model is overloaded
+          llm-api-key: ${{ secrets.LLM_API_KEY }}
+          github-token: ${{ secrets.CI_HEALER_TOKEN || github.token }}
+          dry-run: "true"          # shadow mode
+          comment-on-prs: "true"   # only takes effect once dry-run is "false"
